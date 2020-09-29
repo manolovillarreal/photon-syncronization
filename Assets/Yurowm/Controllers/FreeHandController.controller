@@ -1,5 +1,30 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1101 &-1057383042567889536
+AnimatorStateTransition:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_Conditions:
+  - m_ConditionMode: 1
+    m_ConditionEvent: Jump
+    m_EventTreshold: 0
+  m_DstStateMachine: {fileID: 0}
+  m_DstState: {fileID: 110257653}
+  m_Solo: 0
+  m_Mute: 0
+  m_IsExit: 0
+  serializedVersion: 3
+  m_TransitionDuration: 0.25
+  m_TransitionOffset: 0
+  m_ExitTime: 0.75
+  m_HasExitTime: 1
+  m_HasFixedDuration: 1
+  m_InterruptionSource: 0
+  m_OrderedInterruption: 1
+  m_CanTransitionToSelf: 1
 --- !u!91 &9100000
 AnimatorController:
   m_ObjectHideFlags: 0
@@ -155,7 +180,7 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.316667
+  m_TransitionDuration: 0.07680857
   m_TransitionOffset: 0
   m_ExitTime: 0.9
   m_HasExitTime: 0
@@ -346,9 +371,9 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.0738889
+  m_TransitionDuration: 0.00875242
   m_TransitionOffset: 0
-  m_ExitTime: 0.9
+  m_ExitTime: 0.90000004
   m_HasExitTime: 0
   m_HasFixedDuration: 0
   m_InterruptionSource: 0
@@ -964,7 +989,11 @@ AnimatorState:
   - {fileID: 110196387}
   - {fileID: 110103369}
   - {fileID: 110123488}
+<<<<<<< HEAD
   - {fileID: 1070408717296923581}
+=======
+  - {fileID: -1057383042567889536}
+>>>>>>> 1b9907b581705d7bcc43ebdc2f08b8355a10f2e1
   m_StateMachineBehaviours: []
   m_Position: {x: 684, y: 0, z: 0}
   m_IKOnFeet: 0
@@ -1187,7 +1216,11 @@ AnimatorState:
   m_Transitions:
   - {fileID: 110184960}
   - {fileID: 110169613}
+<<<<<<< HEAD
   - {fileID: 4248119514270665216}
+=======
+  - {fileID: 5701697042018673916}
+>>>>>>> 1b9907b581705d7bcc43ebdc2f08b8355a10f2e1
   m_StateMachineBehaviours: []
   m_Position: {x: 912, y: 0, z: 0}
   m_IKOnFeet: 0
@@ -1284,7 +1317,11 @@ AnimatorStateMachine:
   m_ExitPosition: {x: 800, y: 120, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
   m_DefaultState: {fileID: 110224112}
+<<<<<<< HEAD
 --- !u!1101 &1070408717296923581
+=======
+--- !u!1101 &5701697042018673916
+>>>>>>> 1b9907b581705d7bcc43ebdc2f08b8355a10f2e1
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1293,6 +1330,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
+<<<<<<< HEAD
     m_ConditionEvent: Jump
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
@@ -1344,6 +1382,9 @@ AnimatorStateTransition:
   m_Conditions:
   - m_ConditionMode: 1
     m_ConditionEvent: Jump
+=======
+    m_ConditionEvent: Damage
+>>>>>>> 1b9907b581705d7bcc43ebdc2f08b8355a10f2e1
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 110257653}
@@ -1359,6 +1400,7 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+<<<<<<< HEAD
 --- !u!1101 &4833495098903691329
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -1381,3 +1423,5 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+=======
+>>>>>>> 1b9907b581705d7bcc43ebdc2f08b8355a10f2e1
