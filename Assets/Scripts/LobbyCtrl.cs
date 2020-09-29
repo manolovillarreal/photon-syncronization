@@ -25,25 +25,13 @@ public class LobbyCtrl : MonoBehaviourPunCallbacks
     private Dictionary<RoomInfo,GameObject> RoomsList; //lista de salas
 
     //Match Options
-    private RoomOptions roomOptions;
-    private string RoomName;
-    private int Map = 0;
-    private int GameMode = 0;
-
-    private int expectedMap = -1;
-    private int expectedGameMode = -1;
-    private int expectedMaxPlayers = 0;
+    private int expectedPlayers = 0;
 
 
 
     #region MonoBehaviour Callbacks 
     void Awake()
     {
-        RoomsList = new Dictionary<RoomInfo, GameObject>();
-        roomOptions = new RoomOptions();
-        roomOptions.MaxPlayers = (byte)maxPlayers;
-        roomOptions.IsOpen = true;
-        roomOptions.IsVisible = true;
 
     }
 
@@ -55,41 +43,23 @@ public class LobbyCtrl : MonoBehaviourPunCallbacks
     {
         Debug.Log("Se unio al lobby");
     }
-
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        Debug.Log("update room list of " + roomList.Count);
-        foreach (RoomInfo room in roomList)
-        {
-            Debug.Log(room.CustomProperties);
-            ListRoom(room);
-        }
+      
     }
-
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
-        Debug.Log("No se encontro partida aleatoria");
-        if (EstrictSearch  || flag)
-        {
-            flag = false;
-            CreateRoom();
-        }
-        else
-        {
-            flag = true;
-            PhotonNetwork.JoinRandomRoom();
-        }
-        
+            CreateRoom();       
     }
     public override void OnCreatedRoom()
     {
-        Debug.Log("Creaste el Cuarto de nombre : "+ PhotonNetwork.CurrentRoom.Name);
+        Debug.Log("Se creo un nuevo cuarto para "+PhotonNetwork.CurrentRoom.MaxPlayers);
     }
     public override void OnJoinedRoom()
     {
 
         Debug.Log("Se unio a un cuarto");
-        UIManager.Instance.GotoRoom();
+        UIManager.Instance.ShowProgress("Waiting for players . . .");
 
     }
     public override void OnCreateRoomFailed(short returnCode, string message) //si la sala existe
@@ -100,110 +70,35 @@ public class LobbyCtrl : MonoBehaviourPunCallbacks
 
     #region Private Methods
 
-    void RemoveRoomsFromList()
-    {
-        for (int i = RoomsContainer.childCount - 1; i >= 0; i--)
-        {
-            Destroy(RoomsContainer.GetChild(i).gameObject);
-        }
-    }
-    void ListRoom(RoomInfo room) 
-    {
-        if (room.IsOpen && room.IsVisible)
-        {
-            GameObject roomListItem;
-
-            if (!RoomsList.ContainsKey(room))
-            {
-                roomListItem = Instantiate(prefabRoomItem, RoomsContainer);
-                RoomsList.Add(room, roomListItem);
-            }
-            else
-            {
-                roomListItem = RoomsList[room];
-                if (room.RemovedFromList)
-                {
-                    RoomsList.Remove(room);
-                    Destroy(roomListItem);
-                }
-            }
-
-            RoomItem tempButton = roomListItem.GetComponent<RoomItem>();
-            tempButton.SetRoom(room.Name, room.MaxPlayers, room.PlayerCount);
-        }
-    }
-
     #endregion
-
+    #region Public Methods
     public void CreateRoom()
     {
-        Debug.Log("Creando nueva sala: " + RoomName);
+        Debug.Log("Creando nueva sala para "+expectedPlayers+" judadores");
 
-        roomOptions.CustomRoomPropertiesForLobby = new string[] { MAP_PROP_KEY, GAME_MODE_PROP_KEY };
-        roomOptions.CustomRoomProperties = new ExitGames.Client.Photon.Hashtable { { MAP_PROP_KEY, Map }, { GAME_MODE_PROP_KEY, GameMode } };       
-        PhotonNetwork.CreateRoom(RoomName, roomOptions);
-    }
-    public void FindMatch()
-    {
-        var expectedCustomRoomProperties = new ExitGames.Client.Photon.Hashtable();
+        RoomOptions roomOptions = new RoomOptions();
+        roomOptions.MaxPlayers = (byte)expectedPlayers;
+        roomOptions.IsOpen = true;
+        roomOptions.IsVisible = true;
 
-        if (expectedMap >= 0)
-        {
-            expectedCustomRoomProperties.Add(MAP_PROP_KEY, expectedMap);
-        }
-        if (expectedGameMode >= 0)
-        {
-            expectedCustomRoomProperties.Add(GAME_MODE_PROP_KEY, expectedGameMode);
-        }
-        if (expectedCustomRoomProperties.Count > 0)
-        {
-            Debug.Log("Buscando partida con filtros|  Map: " + expectedMap + " , Players: " + expectedMaxPlayers);
-            PhotonNetwork.JoinRandomRoom(expectedCustomRoomProperties, (byte)expectedMaxPlayers);
-        }
-        else
-        {
-            Debug.Log("Buscando partida sin filtros");
-            PhotonNetwork.JoinRandomRoom();
-        }
+        PhotonNetwork.CreateRoom(null,roomOptions);
     }
-    public void LeaveLobby() //Se enlace al botón cancelar. Se usa para retornar al menú principal
+    public void FindMatch(int players)
     {
+        expectedPlayers = players;
+        PhotonNetwork.JoinRandomRoom(null, (byte)expectedPlayers);
+        UIManager.Instance.GotoRoom();
+       
+    }
+    public void LeaveLobby() { 
         UIManager.Instance.PanelLobby.SetActive(false);
         UIManager.Instance.PanelConnect.SetActive(false);
 
         PhotonNetwork.LeaveLobby();
     }
+    #endregion
 
-    public void SetMaxPlayers(string size)
-    {
-        int _maxPlayers = int.Parse(size);
-        if (string.IsNullOrEmpty(size))
-            expectedMaxPlayers = 0;
-        else
-            expectedMaxPlayers = _maxPlayers;
 
-        roomOptions.MaxPlayers = (byte)_maxPlayers;
-    }
-    public void SetRoomName(string roomName)
-    {
-        if (string.IsNullOrEmpty(roomName))
-        {
-            name = null;
-        }
-        RoomName = roomName;
-    }
-    public void SetRoomIsVisible(bool visible)
-    {
-        roomOptions.IsVisible = visible;
-    }
-    public void SetMap(int map)
-    {
-        expectedMap = map - 1;
-        if (map == 0)
-            this.Map = Random.Range(0, 2);
-        else
-            this.Map = map - 1;
-    }
 
 
 }

@@ -20,6 +20,7 @@ public class ConnectCtrl : MonoBehaviourPunCallbacks
     [SerializeField]
     private string regionCode = null;
 
+
     #endregion
 
     bool isConnecting;
@@ -68,7 +69,8 @@ public class ConnectCtrl : MonoBehaviourPunCallbacks
     /// </summary>
     public void Connect()
     {
-        UIManager.Instance.ShowProgress();
+
+        UIManager.Instance.Connecting();
         // we check if we are connected or not, we join if we are , else we initiate the connection to the server.
         if (PhotonNetwork.IsConnected)
         {

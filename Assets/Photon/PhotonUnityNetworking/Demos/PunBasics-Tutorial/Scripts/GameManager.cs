@@ -10,20 +10,10 @@
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
 using Photon.Realtime;
+using Photon.Pun;
 
-namespace Photon.Pun.Demo.PunBasics
-{
-	#pragma warning disable 649
-
-	/// <summary>
-	/// Game manager.
-	/// Connects and watch Photon Status, Instantiate Player
-	/// Deals with quiting the room and the game
-	/// Deals with level loading (outside the in room synchronization)
-	/// </summary>
-	public class GameManager : MonoBehaviourPunCallbacks
+public class GameManager : MonoBehaviourPunCallbacks
     {
 
 		#region Public Fields
@@ -171,4 +161,3 @@ namespace Photon.Pun.Demo.PunBasics
 
 	}
 
-}

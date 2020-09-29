@@ -3,13 +3,12 @@ using Photon.Realtime;
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class RoomCtrl : MonoBehaviourPunCallbacks
 {
-    public const string MAP_PROP_KEY = "map";
-    public const string GAME_MODE_PROP_KEY = "gm";
 
-
+    private bool GameReady;
     // Start is called before the first frame update
     void Start()
     {
@@ -28,52 +27,45 @@ public class RoomCtrl : MonoBehaviourPunCallbacks
     {
         
     }
-
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-
+        if (PhotonNetwork.IsConnected && PhotonNetwork.CurrentRoom != null)
+        {
+            if (PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers && !GameReady)
+            {
+                UIManager.Instance.ShowProgress("Match Ready");
+                GameReady = true;
+                PhotonNetwork.LoadLevel("Map A");
+            }
+        }
     }
-
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
 
     }
-
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
         Debug.Log("El Master Cliente Se fue \nEl nuevo Master Client es :" + newMasterClient.NickName);     
 ;    }
+    public override void OnLeftRoom()
+    {
+        SceneManager.LoadScene(0);
+    }
 
     #endregion
 
     #region private methods
-    
+
     #endregion
 
     #region public Methods
-    public void StartGame()
-    {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            PhotonNetwork.CurrentRoom.IsOpen = false;
-            PhotonNetwork.LoadLevel(1);
-        }
-    }
 
     public void LeaveRoom() // Retorna al lobby
     {
-        UIManager.Instance.GoToLobby();
         PhotonNetwork.LeaveRoom();
-        PhotonNetwork.LeaveLobby();
-        StartCoroutine(rejoinLobby());
     }
+
     #endregion
 
-    IEnumerator rejoinLobby()
-    {
-        yield return new WaitForSeconds(2);
-        // para forzar la actualización de la lista de salas 
-        PhotonNetwork.JoinLobby();
-    }
 
 }

@@ -23,6 +23,11 @@ public class Actions : MonoBehaviour {
 		animator.SetFloat ("Speed", 0.5f);
 	}
 
+    public void Move(float speed)
+    {
+        animator.SetBool("Aiming", false);
+        animator.SetFloat("Speed", speed);
+    }
 	public void Run () {
 		animator.SetBool("Aiming", false);
 		animator.SetFloat ("Speed", 1f);
