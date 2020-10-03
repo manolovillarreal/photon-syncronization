@@ -49,7 +49,7 @@ public class RoomCtrl : MonoBehaviourPunCallbacks
 ;    }
     public override void OnLeftRoom()
     {
-        SceneManager.LoadScene(0);
+        UIManager.Instance.GoToLobby();
     }
 
     #endregion

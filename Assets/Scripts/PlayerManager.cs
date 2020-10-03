@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
+public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable,IPunInstantiateMagicCallback
 {
     #region Public Fields
 
@@ -125,14 +125,30 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         if (stream.IsWriting)
         {
             // We own this player: send the others our data
-            stream.SendNext(this.IsFiring);
+           // stream.SendNext(this.IsFiring);
             stream.SendNext(this.Health);
         }
         else
         {
             // Network player, receive data
-            this.IsFiring = (bool)stream.ReceiveNext();
+           // this.IsFiring = (bool)stream.ReceiveNext();
             this.Health = (float)stream.ReceiveNext();
+        }
+    }
+
+    public void OnPhotonInstantiate(PhotonMessageInfo info)
+    {
+        Debug.Log("OnPhotonInstantiate");
+        if (info.photonView.gameObject.CompareTag("Player"))
+        {
+            Debug.Log("Se creo el  Player Prefab de " + info.Sender.NickName);
+
+            object[] instantiationData = info.photonView.InstantiationData;
+
+            int level = (int)instantiationData[0];
+            string rol = (string)instantiationData[1];
+            Debug.Log("Player Level:  " + level + " Clase: " + rol);
+
         }
     }
 

@@ -18,8 +18,8 @@ using UnityEngine.EventSystems;
     /// Player manager.
     /// Handles fire Input and Beams.
     /// </summary>
-    public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
-    {
+    public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable, IPunInstantiateMagicCallback
+{
         #region Public Fields
 
         [Tooltip("The current Health of our player")]
@@ -138,7 +138,7 @@ using UnityEngine.EventSystems;
             this.Health -= 0.1f*Time.deltaTime;
         }
     #endregion
-    #region IPunObservable implementation
+    #region IPun Implementation
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
@@ -156,5 +156,26 @@ using UnityEngine.EventSystems;
             }
         }
 
-        #endregion
+
+    public void OnPhotonInstantiate(PhotonMessageInfo info)
+    {
+        Debug.Log("OnPhotonInstantiate");
+        if (info.photonView.gameObject.CompareTag("Player"))
+        {
+            Debug.Log("Se creo el  Player Prefab de " + info.Sender.NickName);
+
+            object[] instantiationData = info.photonView.InstantiationData;
+
+            string level = (string)instantiationData[0];
+            string rol = (string)instantiationData[1];
+            Debug.Log("Player Level:  " + level + " Clase: " + rol);
+
+
+        }
     }
+
+    #endregion
+
+}
+
+

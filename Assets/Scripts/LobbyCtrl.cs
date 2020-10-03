@@ -49,18 +49,17 @@ public class LobbyCtrl : MonoBehaviourPunCallbacks
     }
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
-            CreateRoom();       
+        Debug.Log("No se econtro partida");
+        CreateRoom();       
     }
     public override void OnCreatedRoom()
     {
         Debug.Log("Se creo un nuevo cuarto para "+PhotonNetwork.CurrentRoom.MaxPlayers);
     }
     public override void OnJoinedRoom()
-    {
-
+    {    
         Debug.Log("Se unio a un cuarto");
         UIManager.Instance.ShowProgress("Waiting for players . . .");
-
     }
     public override void OnCreateRoomFailed(short returnCode, string message) //si la sala existe
     {
@@ -80,6 +79,7 @@ public class LobbyCtrl : MonoBehaviourPunCallbacks
         roomOptions.MaxPlayers = (byte)expectedPlayers;
         roomOptions.IsOpen = true;
         roomOptions.IsVisible = true;
+        roomOptions.CleanupCacheOnLeave = false;
 
         PhotonNetwork.CreateRoom(null,roomOptions);
     }

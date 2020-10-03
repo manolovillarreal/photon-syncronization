@@ -53,6 +53,10 @@ public class ConnectCtrl : MonoBehaviourPunCallbacks
             UIManager.Instance.GoToLobby();
             PhotonNetwork.JoinLobby();
         }
+        else
+        {
+            UIManager.Instance.GoToLobby();
+        }
     }
   
     public override void OnDisconnected(DisconnectCause cause)
@@ -73,8 +77,7 @@ public class ConnectCtrl : MonoBehaviourPunCallbacks
         UIManager.Instance.Connecting();
         // we check if we are connected or not, we join if we are , else we initiate the connection to the server.
         if (PhotonNetwork.IsConnected)
-        {
-                                 
+        {            
         }
         else
         {
