@@ -1,14 +1,17 @@
-﻿using Photon.Pun;
+﻿using ExitGames.Client.Photon;
+using Photon.Pun;
 using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class GameController : MonoBehaviourPunCallbacks
 {
     public static GameController Instance;
-    [Tooltip("The prefab to use for representing the player")]
+    public static LayerMask Ground;
+
     public GameObject playerPrefab;
 
     // Start is called before the first frame update
@@ -22,14 +25,19 @@ public class GameController : MonoBehaviourPunCallbacks
         }
         else
         {
-            if (PlayerManager.LocalPlayerInstance == null)
+            if (PhotonNetwork.IsConnectedAndReady && PlayerManager.LocalPlayerInstance == null)
             {
                 object[] myCustomInitData = new object[]
                 {
                     20,"sniper",
                 };
 
-                PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f, 5f, 0f), Quaternion.identity, 0, myCustomInitData);
+                PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f, 1f, 0f), playerPrefab.transform.rotation, 0, myCustomInitData);
+            }
+            else
+            {
+                PhotonNetwork.OfflineMode = true;
+                Instantiate(playerPrefab, new Vector3(0f, 1f, 0f), playerPrefab.transform.rotation);
             }
         }
 
@@ -61,7 +69,10 @@ public class GameController : MonoBehaviourPunCallbacks
 
         }
     }
-
+    public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
+    {
+        Debug.Log(propertiesThatChanged);
+    }
 
     public override void OnLeftRoom()
     {
@@ -75,5 +86,6 @@ public class GameController : MonoBehaviourPunCallbacks
         PhotonNetwork.LeaveRoom();
     }
 
-    
+
+
 }

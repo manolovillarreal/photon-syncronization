@@ -4,21 +4,16 @@ using Photon.Pun;
 
 public class PlayerAnimatorManager : MonoBehaviourPun
 {
-    #region Private Fields
-
 
     [SerializeField]
-    private float directionDampTime = 0.25f;
+    public float GroundDistance = 0.2f;
 
+    #region Private Fields
     private Animator animator;
     private Actions ControllerActions;
-
     private CharacterController controller;
-    private Vector3 playerVelocity;
-    private bool groundedPlayer;
-    private float playerSpeed = 2.0f;
-    private float jumpHeight = 1.0f;
-    private float gravityValue = -9.81f;
+    private bool _isGrounded = true;
+    private Transform _groundChecker;
     #endregion
 
 
@@ -39,6 +34,7 @@ public class PlayerAnimatorManager : MonoBehaviourPun
         }
 
         ControllerActions = GetComponent<Actions>();
+        _groundChecker = transform.GetChild(0);
 
     }
     // Update is called once per fravme
@@ -53,24 +49,32 @@ public class PlayerAnimatorManager : MonoBehaviourPun
         {
             return;
         }
-        // deal with Jumping
-        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-        // only allow jumping if we are running.
 
-            if (Input.GetButtonDown("Jump"))
-            {
-                animator.SetTrigger("Jump");
-            }
-        
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
-        Vector3 move = new Vector3(h, 0, v);
+        Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0, 00);
+
+
+        _isGrounded = Physics.CheckSphere(_groundChecker.position, GroundDistance, GameController.Ground, QueryTriggerInteraction.Ignore);
+
+        if (Input.GetButtonDown("Jump") )
+        {
+            //ControllerActions.Jump();
+        }
+        if (Input.GetButtonDown("Fire1") )
+        {
+            Debug.Log("Shot");
+            ControllerActions.Attack();
+        }
 
         if (move != Vector3.zero)
         {
             gameObject.transform.forward = move;
+            ControllerActions.Move(move.magnitude);
         }
-        animator.SetFloat("Speed", move.magnitude);
-        animator.SetFloat("Direction", h, directionDampTime, Time.deltaTime);
+
+
+
+
+
+
     }
 }

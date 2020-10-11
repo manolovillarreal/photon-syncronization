@@ -95,7 +95,7 @@ using System.Collections;
             {
                 characterControllerHeight = characterController.height;
             }
-            if (playerNameText != null)
+            if (playerNameText != null )
             {
                 playerNameText.text = target.photonView.Owner.NickName;
             }

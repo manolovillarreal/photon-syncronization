@@ -7,10 +7,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable,IPunInsta
 {
     #region Public Fields
 
-    [Tooltip("The current Health of our player")]
     public float Health = 1f;
-
-    [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
     public static GameObject LocalPlayerInstance;
 
     #endregion
@@ -29,21 +26,18 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable,IPunInsta
 
     #region MonoBehaviour CallBacks
 
-    /// <summary>
-    /// MonoBehaviour method called on GameObject by Unity during early initialization phase.
-    /// </summary>
+
     public void Awake()
     {
-        if (photonView.IsMine)
+        if (!photonView.IsMine && PhotonNetwork.IsConnected == true)
         {
-            LocalPlayerInstance = gameObject;
+            return;
         }
+        LocalPlayerInstance = gameObject;
+        Camera.main.SendMessage("SetTarget",transform, SendMessageOptions.RequireReceiver);
 
     }
 
-    /// <summary>
-    /// MonoBehaviour method called on GameObject by Unity during initialization phase.
-    /// </summary>
     public void Start()
     {
 
@@ -59,22 +53,20 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable,IPunInsta
         }
     }
 
-    /// <summary>
-    /// MonoBehaviour method called on GameObject by Unity on every frame.
-    /// Process Inputs if local player.
-    /// Show and hide the beams
-    /// Watch for end of game, when local player health is 0.
-    /// </summary>
+
     public void Update()
     {
         // we only process Inputs and check health if we are the local player
-        if (photonView.IsMine)
+        if (photonView.IsMine == false && PhotonNetwork.IsConnected == true)
         {
-            if (this.Health <= 0f)
-            {
-
-            }
+            return;
         }
+
+
+        if (this.Health <= 0f)
+        {
+
+        }     
     }
 
     /// <summary>
@@ -89,8 +81,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable,IPunInsta
         {
             return;
         }
-        // We are only interested in Beamers
-        // we should be using tags but for the sake of distribution, let's simply check by name.
         if (!other.name.Contains("Beam"))
         {
             return;
@@ -106,19 +96,10 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable,IPunInsta
         {
             return;
         }
-
-        // We are only interested in Beamers
-        // we should be using tags but for the sake of distribution, let's simply check by name.
-        if (!other.name.Contains("Beam"))
-        {
-            return;
-        }
-
-        // we slowly affect health when beam is constantly hitting us, so player has to move to prevent death.
-        this.Health -= 0.1f * Time.deltaTime;
+        
     }
     #endregion
-    #region IPunObservable implementation
+    #region IPun implementation
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
@@ -151,6 +132,26 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable,IPunInsta
 
         }
     }
+    #endregion
+
+    #region RPCs
+
+  
+
+    [PunRPC]
+    public void TakeDamage(float dmg)
+    {
+        Debug.Log("Taking "+dmg+" Damage");
+        Health -= dmg;
+    }
 
     #endregion
+
+    public void BulletHit(float dmg)
+    {
+        if (photonView.IsMine)
+        {
+            photonView.RPC("TakeDamage", RpcTarget.All,dmg);
+        }
+    }
 }
