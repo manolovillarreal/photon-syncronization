@@ -8,17 +8,13 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-public enum EventCodesEnum
-{
-    Zero,
-    DoorSystem
-}
+
 
 public class DoorSystemManager : MonoBehaviour ,IOnEventCallback
 {
 
     public List<AutoDoor> Doors;
-
+    public byte startId;
 
     void Awake()
     {
@@ -40,7 +36,7 @@ public class DoorSystemManager : MonoBehaviour ,IOnEventCallback
         Doors = new List<AutoDoor>(GetComponentsInChildren<AutoDoor>());
         for (int i = 0; i < Doors.Count; i++)
         {
-            Doors[i].Id =(byte)(i + 1);
+            Doors[i].Id =(byte)(startId +i + 1);
         }
 
     }
@@ -67,10 +63,8 @@ public class DoorSystemManager : MonoBehaviour ,IOnEventCallback
 
             string doorAction = (doorState) ? "cerrada" : "abierta";
             string msg = "La puerta " + doorId + " ha sido " + doorAction;
-
-            Doors.Find(x => x.Id == doorId).SetDoorState(doorState);
-            //this.BroadcastMessage("SetDoorState", doorState, SendMessageOptions.RequireReceiver);
             Debug.Log(msg);
+            Doors.Find(x => x.Id == doorId).SetDoorState(doorState);
         }
     }
 

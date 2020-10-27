@@ -13,39 +13,18 @@ public class GameController : MonoBehaviourPunCallbacks
     public static LayerMask Ground;
 
     public GameObject playerPrefab;
+    public Transform TeamASpawnPoint;
+    public Transform TeamBSpawnPoint;
 
     // Start is called before the first frame update
     void Start()
     {
         Instance = this;
 
-        if (playerPrefab == null)
-        {
-            Debug.LogError("<Color=Red><a>Missing</a></Color> playerPrefab Reference. Please set it up in GameObject 'Game Manager'", this);
-        }
-        else
-        {
-            if (PhotonNetwork.IsConnectedAndReady && PlayerManager.LocalPlayerInstance == null)
-            {
-                object[] myCustomInitData = new object[]
-                {
-                    20,"sniper",
-                };
-
-                PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f, 1f, 0f), playerPrefab.transform.rotation, 0, myCustomInitData);
-            }
-            else
-            {
-                PhotonNetwork.OfflineMode = true;
-                Instantiate(playerPrefab, new Vector3(0f, 1f, 0f), playerPrefab.transform.rotation);
-            }
-        }
-
-        if (PhotonNetwork.IsMasterClient)
-        {
-            //PhotonNetwork.InstantiateRoomObject();
-            //photonView.TransferOwnership();
-        }
+       if (PhotonNetwork.IsConnectedAndReady )
+       {
+            StartGame();
+       }
     }
 
 
@@ -73,18 +52,52 @@ public class GameController : MonoBehaviourPunCallbacks
     {
         Debug.Log(propertiesThatChanged);
     }
-
     public override void OnLeftRoom()
     {
         SceneManager.LoadScene(0);
     }
     #endregion
 
+    public void StartGame()
+    {
 
+        if (playerPrefab == null)
+        {
+            Debug.LogError("<Color=Red><a>Missing</a></Color> playerPrefab Reference. Please set it up in GameObject 'Game Manager'", this);
+        }
+        else
+        {
+             PhotonNetwork.SetInterestGroups(1, true);
+
+            if (PlayerManager.LocalPlayerInstance == null)
+            {
+
+                object[] myCustomInitData = null;
+
+
+                byte playerTeam = (byte)PhotonNetwork.LocalPlayer.CustomProperties["Team"];
+                Vector3 spawnPosition = (playerTeam == 1) ? TeamASpawnPoint.position : TeamBSpawnPoint.position;
+                byte[] i = new byte[] { 0, 1, 2 };
+                PhotonNetwork.Instantiate(this.playerPrefab.name, spawnPosition, playerPrefab.transform.rotation,0, myCustomInitData);
+               
+            }
+        }
+    }
     public void LeaveRoom()
     {
         PhotonNetwork.LeaveRoom();
     }
+    public void PlayerDeath(PlayerManager playerManager)
+    {
+        playerManager.gameObject.SetActive(false);
+
+        byte playerTeam = (byte)playerManager.photonView.Owner.CustomProperties["Team"];
+        Vector3 spawnPosition = (playerTeam == 1) ? TeamASpawnPoint.position : TeamBSpawnPoint.position;
+        playerManager.transform.position = spawnPosition;
+        playerManager.spwanCountdown(5f);
+
+    }
+  
 
 
 

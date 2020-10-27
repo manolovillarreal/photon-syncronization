@@ -9,6 +9,7 @@ public class RoomCtrl : MonoBehaviourPunCallbacks
 {
 
     private bool GameReady;
+    private byte nextTeam = 1;
     // Start is called before the first frame update
     void Start()
     {
@@ -29,15 +30,21 @@ public class RoomCtrl : MonoBehaviourPunCallbacks
     }
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        if (PhotonNetwork.IsConnected && PhotonNetwork.CurrentRoom != null)
-        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                var propsToSet = new ExitGames.Client.Photon.Hashtable() { { "Team", nextTeam } };
+                newPlayer.SetCustomProperties(propsToSet);
+                nextTeam = (nextTeam == 1) ? (byte)2 : (byte)1;               
+                
+            }
+           
             if (PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers && !GameReady)
             {
                 UIManager.Instance.ShowProgress("Match Ready");
                 GameReady = true;
-                PhotonNetwork.LoadLevel("Map A");
-            }
-        }
+                if (PhotonNetwork.IsMasterClient)
+                    PhotonNetwork.LoadLevel("Map A");
+            }        
     }
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {

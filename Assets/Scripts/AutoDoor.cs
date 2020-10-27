@@ -52,7 +52,7 @@ public class AutoDoor : MonoBehaviour
         object[] content = new object[] { this.Id, state };
         RaiseEventOptions raiseEventOptions = new RaiseEventOptions {
                 Receivers = ReceiverGroup.All ,
-                CachingOption  = EventCaching.DoNotCache
+                CachingOption = EventCaching.DoNotCache
             };
         PhotonNetwork.RaiseEvent((byte)EventCodesEnum.DoorSystem, content, raiseEventOptions, SendOptions.SendReliable);
 

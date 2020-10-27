@@ -28,8 +28,9 @@ public class Shooter : MonoBehaviourPun
     }
 
     [PunRPC]
-    public void Fire()
+    public void Fire(PhotonMessageInfo info)
     {
-        Instantiate(BulletPrefab, BulletSpawnPoint.position, BulletSpawnPoint.rotation);
+        GameObject  bullet =  Instantiate(BulletPrefab, BulletSpawnPoint.position, BulletSpawnPoint.rotation);
+        bullet.GetComponent<Bullet>().Owner = info.Sender;
     }
 }

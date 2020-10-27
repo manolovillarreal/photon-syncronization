@@ -7,15 +7,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
-public class TestGameController : MonoBehaviourPunCallbacks
+public class TestConnectCtrl : MonoBehaviourPunCallbacks
 {
     public byte MaxPlayers = 20;
-    public static TestGameController Instance;
-
-    public LayerMask Ground;
-    public GameObject playerPrefab;
-
-
+    private byte nextTeam = 1;
 
     void Awake()
     {
@@ -32,16 +27,27 @@ public class TestGameController : MonoBehaviourPunCallbacks
         Debug.Log("Conectado al Servidor de Photon");
         CreateRoom();
     }
-    public override void OnJoinedRoom()
+    public override void OnCreatedRoom()
     {
-        Debug.Log("Se unio a un cuarto");
-        StartGame();
+        Debug.Log("Se creo el cuarto");
+        SetPlayerTeam(PhotonNetwork.LocalPlayer);
     }
-    public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
     {
-        Debug.Log("Room props update:"+propertiesThatChanged);
+        if (targetPlayer.IsLocal && changedProps.ContainsKey("Team"))
+        {
+            GameController.Instance.StartGame();
+        }
     }
-
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        Debug.Log("Player Enter");
+        if (PhotonNetwork.IsMasterClient)
+        {
+            SetPlayerTeam(newPlayer);
+        };              
+        
+    }
     #endregion
 
     #region Privaye Methods
@@ -49,27 +55,6 @@ public class TestGameController : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.PhotonServerSettings.AppSettings.FixedRegion = RegionsCodes.USW.ToString();
         PhotonNetwork.ConnectUsingSettings();
-    }
-    private void StartGame()
-    {
-        Instance = this;
-
-        if (playerPrefab == null)
-        {
-            Debug.LogError("<Color=Red><a>Missing</a></Color> playerPrefab Reference. Please set it up in GameObject 'Game Manager'", this);
-        }
-        else
-        {
-            if (PlayerManager.LocalPlayerInstance == null)
-            {
-                object[] myCustomInitData = new object[]
-                {
-                    20,"sniper",
-                };
-                
-                PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f, 1f, 0f), playerPrefab.transform.rotation, 0, myCustomInitData);
-            }
-        }
     }
     public void CreateRoom()
     {
@@ -80,5 +65,12 @@ public class TestGameController : MonoBehaviourPunCallbacks
 
         PhotonNetwork.JoinOrCreateRoom("Test Room",roomOptions, new TypedLobby(null,LobbyType.Default));
     }
+    private void SetPlayerTeam(Player player)
+    {
+        var propsToSet = new ExitGames.Client.Photon.Hashtable() { { "Team", nextTeam }, { "KEY", "Value" } };       
+        player.SetCustomProperties(propsToSet);
+        nextTeam = (nextTeam == 1) ? (byte)2 : (byte)1;
+    }
     #endregion
+
 }

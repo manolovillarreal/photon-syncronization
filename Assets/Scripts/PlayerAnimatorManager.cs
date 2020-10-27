@@ -61,7 +61,6 @@ public class PlayerAnimatorManager : MonoBehaviourPun
         }
         if (Input.GetButtonDown("Fire1") )
         {
-            Debug.Log("Shot");
             ControllerActions.Attack();
         }
 
